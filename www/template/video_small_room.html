@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="/static/js/jquery-1.12.4.min.js"></script>
+    <title></title>
+</head>
+<body>
+    <video src="{{ handler.video_uri }}" preload="auto" controls playinline style="width:500px;height:300px;"></video>
+    {{handler.video_uri}}
+
+</body>
+</html>
+<script type="text/javascript">
+    var WEBSOCKET_URL="ws://192.168.200.5:8888/ws?aim_id=INROOM";
+    var BLOCK_ID = "INROOM"
+    var USER_ID = "no_login:"+(new Date()).getTime()/1000.0
+</script>
+<script src="/static/js/video.js?v={{handler.version}}"></script>

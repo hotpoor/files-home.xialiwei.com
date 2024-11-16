@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>梦境空港 tcp dashbaord</title>
+    <script src="/static/js/jquery-1.12.4.min.js"></script>
+    <style type="text/css">
+        .device_select_area_btn,
+        .device_select_area_btn_item{
+            border: 0;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 8px;
+            background: white;
+            color: black;
+            box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        .device_select_area_btn.selected,
+        .device_select_area_btn_item.selected{
+            background: black;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <h3>入口处</h3>
+        <button class="close_enter_door_and_play_video">关闭入口-并播放视频</button>
+        <button class="open_enter_door_and_close_exit_door">打开入口-关闭出口</button>
+    </div>
+    <div>
+        <h3>出口处</h3>
+        <button class="close_exit_door">关闭出口</button>
+        <button class="open_exit_door">打开出口</button>
+    </div>
+    <div>
+        <h3>全局操控</h3>
+        <div class="device_select_area">
+            <div class="device_select_area_btn selected">全部</div>
+        </div>
+        <button class="all_low">全部LOW 低点</button>
+        <button class="all_mid">全部MID 中间点</button>
+        <button class="all_stop">全部STOP 停止运动 随动关闭</button>
+        <button class="all_start">全部START 开始并随动</button>
+        <button class="all_fanlow">全部FANLOW 开始微风</button>
+        <button class="all_fanhigh">全部FANLOW 开始强风</button>
+        <button class="all_fanstop">全部FANSTOP 风停</button>
+        <button class="all_turnstart">全部地台旋转</button>
+        <button class="all_turnstop">全部地台停止</button>
+
+        <button class="all_virbon">全部地台震动</button>
+        <button class="all_virboff">全部地台震动停止</button>
+
+        <button class="all_ue_start">全部UE开始</button>
+        <button class="all_ue_return">全部UE回到初始</button>
+    </div>
+    <div style="display: flex;">
+    <div>
+        <h1>地台控制</h1>
+        {% for i in ["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18"] %}
+            <div class="device" data-deivce-id="{{i}}">
+                <div>device_id:{{i}}</div>
+                <button class="deivce_action" data-tcp-or-udp="udp" data-action="down">地台下客</button>
+                <button class="deivce_action" data-tcp-or-udp="udp" data-action="center">地台回中</button>
+                <button class="deivce_action" data-tcp-or-udp="udp" data-action="stop">平台随动停止</button>
+                <button class="deivce_action" data-tcp-or-udp="udp" data-action="start">平台随动开始</button>
+                <button class="deivce_action" data-tcp-or-udp="udp" data-action="fanlow">风扇微风</button>
+                <button class="deivce_action" data-tcp-or-udp="udp" data-action="fanhigh">风扇大风</button>
+                <button class="deivce_action" data-tcp-or-udp="udp" data-action="fanstop">风扇停止</button>
+                <button class="deivce_action" data-tcp-or-udp="udp" data-action="turnstart">开始旋转</button>
+                <button class="deivce_action" data-tcp-or-udp="udp" data-action="turnstop">停止旋转</button>
+
+                <button class="deivce_action" data-tcp-or-udp="udp" data-action="virbon">地台震动</button>
+                <button class="deivce_action" data-tcp-or-udp="udp" data-action="virboff">震动停止</button>
+            </div>
+        {% end for%}
+    </div>
+    <div>
+    <h1>游戏控制</h1>
+    {% for i in handler.tcpclients_dict_key %}
+        <div class="device" data-deivce-id="{{i}}">
+            <div>device_id:{{i}}</div>
+            <button class="deivce_action" data-tcp-or-udp="tcp" data-action="start">UE开始</button>
+            <button class="deivce_action" data-tcp-or-udp="tcp" data-action="pause">UE暂停</button>
+            <button class="deivce_action" data-tcp-or-udp="tcp" data-action="play">UE继续播放</button>
+            <button class="deivce_action" data-tcp-or-udp="tcp" data-action="return">UE回到初始</button>
+            <button class="deivce_action" data-tcp-or-udp="tcp" data-action="heart">UE心跳确认</button>
+        </div>
+    {% end for%}
+    </div>
+</body>
+<script src="/static/js/tcp_dashboard.js?t={{handler.time_now}}"></script>

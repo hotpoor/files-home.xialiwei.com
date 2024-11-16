@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<meta charset="utf-8"> 
+<style>
+    .zIndex1{
+        z-index:1;
+    }
+    .zIndex-1{
+        z-index:-1;
+    }
+</style>
+<div style="border:0px solid #eee;position: absolute;top: 0;z-index:0">
+    <div id="play_stop" style="position: absolute;width: 100%;height: 100%;background-image:url(934.png);background-size: 50%;z-index:2;">
+        <input type="button" value="播放"  id="play" />
+        <input type="button" value="暂停"  id="stop" />
+    </div>
+    <div style="z-index:1;background: white;">
+        <canvas id="canvas-1" width="1920" height="1080"></canvas>
+    </div>
+</div>
+<script>
+var timer = null;
+var video = document.createElement("video");
+var canvas = document.getElementById("canvas-1");
+var ctx = canvas.getContext("2d");
+var play_stop = document.getElementById("play_stop");
+
+function drawTip(text) {
+    canvas.width  = canvas.width;
+    canvas.height = canvas.height;
+    ctx.font = "24px Microsoft YaHei";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(text,canvas.width/2,canvas.height/2);
+}
+
+function init() {
+    //drawTip("正在缓冲中....");
+    video.src = "http://192.168.200.5/video/b.mp4";
+}
+
+video.oncanplay = function() {
+    //drawTip("加载完毕，开始播放")
+}
+
+function play() {
+    init();
+    video.play();
+    play_stop.style.zIndex = -1;
+    timer = setInterval(function(){
+      if(video.currentTime >= video.duration){
+        video.src = "http://192.168.200.5/video/b.mp4";
+        video.play();
+        //stop();
+      };
+      // 针对webm格式的视频每一次绘制前，都清除上一次画布的内容，防止重影
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(video, (canvas.width-video.videoWidth)/2, (canvas.height-video.videoHeight)/2, video.videoWidth, video.videoHeight);//绘制视频
+   },16);
+}
+
+function stop(){
+    clearInterval(timer);
+    video.pause();
+}
+
+//drawTip("你可以点击播放按钮播放视频....")
+document.getElementById("play").onclick = function(){ play();}
+document.getElementById("stop").onclick = function(){ stop();}
+</script>

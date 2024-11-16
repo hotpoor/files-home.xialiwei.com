@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Upload with Streaming Progress</title>
+    <link rel="stylesheet" type="text/css" href="/static/css/upload_file/index.css?v={{handler.version}}">
+    <script src="/static/js/jquery-1.12.4.min.js"></script>
+</head>
+<body>
+    <h1>Upload File</h1>
+    <input type="file" id="fileInput" multiple/>
+    <button onclick="uploadFile1()">Upload</button>
+    <pre id="progress">Progress: 0%</pre>
+    <div class="file_list_show">
+        <div class="file_list_show_page_btns">
+            
+        </div>
+        <div class="file_list_show_page_main">
+            
+        </div>
+    </div>
+    <script>
+        function uploadFile1 (){
+            const files = document.getElementById('fileInput').files;
+            const formData = new FormData();
+            for (let i = 0; i < files.length; i++) {
+                formData.append('files', files[i]);
+            }
+
+            const xhr = new XMLHttpRequest();
+            xhr.open('POST', '/api/upload', true);
+
+            // 进度事件
+            last_e_loaded = 0
+            xhr.upload.onprogress = function(e) {
+                if (e.lengthComputable) {
+                    const progress = (e.loaded / e.total) * 100;
+                    console.log("speed",(e.loaded-last_e_loaded)/1024/1024,"M ",e.loaded,'/',e.total,' ',progress.toFixed(2),'%')
+                    document.getElementById('progress').innerText = `Upload progress: ${progress.toFixed(2)}%`;
+                    last_e_loaded = e.loaded
+                }
+            };
+
+            // 完成事件
+            xhr.onload = function() {
+                if (xhr.status === 200) {
+                    console.log('Upload completed');
+                    // 处理服务器响应
+                } else {
+                    console.error('Upload error:', xhr.statusText);
+                }
+            };
+
+            // 错误事件
+            xhr.onerror = function() {
+                console.error('Upload failed');
+            };
+
+            // 发送请求
+            xhr.send(formData);
+
+        }
+
+
+        async function uploadFile() {
+            const file = document.getElementById('fileInput').files[0];
+            if (!file) {
+                alert("Please select a file to upload.");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const response = await fetch('/api/upload', {
+                    method: 'POST',
+                    body: file,
+                    headers: {
+                        'X-File-Name': encodeURIComponent(file.name)
+                    }
+                });
+
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder("utf-8");
+                let progressElement = document.getElementById('progress');
+                let progressText = '';
+
+                // 读取服务器流式响应的数据块
+                while (true) {
+                    const { done, value } = await reader.read();
+                    if (done) break;
+                    current_progeressText = decoder.decode(value, { stream: true });
+                    progressText += current_progeressText;
+                    current_progeressText_list = current_progeressText.split("\r\n")
+                    console.log(current_progeressText_list)
+                    progressElement.textContent = progressText;
+                }
+
+                // 上传完成
+                alert("Upload complete!");
+            } catch (error) {
+                console.error("Upload failed:", error);
+                alert("An error occurred during the upload.");
+            }
+            // $.ajax({
+            //     "url":"/api/upload",
+            //     "method":"POST",
+            //     "data":file,
+            //     "headers":{
+            //         "X-File—name":encodeURIComponent(file.name)
+            //     },
+            //     "xhrFields":{
+            //         "onprogress":function(event){
+            //             console.log("onprogress event")
+            //             console.log(event)
+            //         }
+            //     },
+            //     "success":function(data){
+            //         console.log("success",data)
+            //     },
+            //     "error":function(data){
+            //         console.log("error",data)
+            //     },
+            //     "complete":function(data){
+            //         console.log("complete",data)
+            //     },
+            // })
+
+        }
+    </script>
+</body>
+</html>
+<script type="text/javascript">
+    var SOURCE_PATH = "{{handler.source_path}}";
+</script>
+<script src="/static/js/upload_file/index.js?v={{handler.version}}"></script>
